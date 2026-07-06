@@ -2,22 +2,28 @@ import { useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
+import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProjectScreen from './screens/ProjectScreen';
 import SkillsScreen from './screens/SkillsScreen';
 
-type Tab = 'perfil' | 'habilidades' | 'proyecto';
+type Tab = 'inicio' | 'perfil' | 'habilidades' | 'proyecto';
 
 const tabs: { id: Tab; label: string }[] = [
+  { id: 'inicio', label: 'Inicio' },
   { id: 'perfil', label: 'Perfil' },
   { id: 'habilidades', label: 'Habilidades' },
   { id: 'proyecto', label: 'Proyecto' },
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('perfil');
+  const [activeTab, setActiveTab] = useState<Tab>('inicio');
 
   const renderScreen = () => {
+    if (activeTab === 'inicio') {
+      return <HomeScreen />;
+    }
+
     if (activeTab === 'habilidades') {
       return <SkillsScreen />;
     }
