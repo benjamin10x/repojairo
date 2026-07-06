@@ -1,4 +1,11 @@
-import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import ProductCard from '../components/ProductCard';
 import { useProductos } from '../hooks/useProductos';
@@ -7,7 +14,7 @@ import type { Artesano, Producto } from '../types';
 type ProductoConArtesano = Producto & { artesano?: Artesano };
 
 export default function HomeScreen() {
-  const productos = useProductos();
+  const { productos, cargando, getArtesano } = useProductos();
 
   const confirmarOferta = (producto: ProductoConArtesano) => {
     Alert.alert(
@@ -35,15 +42,31 @@ export default function HomeScreen() {
         Productos disponibles de artesanos locales.
       </Text>
 
-      <FlatList
-        data={productos}
-        keyExtractor={(producto) => producto.id}
-        renderItem={({ item }) => (
-          <ProductCard producto={item} onOffer={confirmarOferta} />
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+      {cargando ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator color="#1f6feb" size="large" />
+        </View>
+      ) : (
+        <FlatList
+          data={productos}
+          keyExtractor={(producto) => producto.id}
+          renderItem={({ item }) => {
+            const productoConArtesano = {
+              ...item,
+              artesano: getArtesano(item.artesanoId),
+            };
+
+            return (
+              <ProductCard
+                producto={productoConArtesano}
+                onOffer={confirmarOferta}
+              />
+            );
+          }}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -68,5 +91,10 @@ const styles = StyleSheet.create({
   listContent: {
     gap: 14,
     paddingBottom: 28,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
 });
